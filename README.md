@@ -1,46 +1,8 @@
 ## EasyEvents for [LeoEcsLite](https://github.com/Leopotam/ecslite)
-* Boilerplate-free syntax from creation to destruction for events - entities with single component.  
-* No need to define filters, pools, and worlds in every place you want to use events, everything is inside EventsSupport object.  
+* Boilerplate-free syntax for full life cycle of events - entities with single component.  
+* No need to define filters, pools, and worlds in every place you want to use events, everything is inside one EventsSupport object.  
 * Special support for singleton events - no more silly situations, when you have to run foreach loop over filter, even if you sure, that there can be only one entity.
-### Usage:
-Event component (a.k.a event body) should implement one (and only one) event type:
-```c#
-/// <summary>
-/// Simultaneously there can be only one instance of this event type
-/// </summary>
-public interface IEventSingleton { }
-
-/// <summary>
-/// Simultaneously there can be multiple instances of this event type
-/// </summary>
-public interface IEventReplicant { }
-```
-```c#
-public struct PlayerSwitchWeaponEvent : IEventSingleton { ... }
-public struct CreateVFX : IEventReplicant { ... }
-```
-#### Initialize EventsSupport object:
-```c#
-private void Start()
-{
-    world = new EcsWorld();
-    worldEvents = new EcsWorld();
-    sharedData = new SharedData
-    {
-        // this events support object will manage events only in this world
-        // you can use default world, but it's better to have separate one to reduce memory usage
-        EventsSupport = new EventsSupport(worldEvents),
-        ...
-    };
-
-    systems = new EcsSystems(world, sharedData);
-    systems
-        // you need to add according world to systems
-        .AddWorld(worldEvents, "events")
-        ...
-        .Init();
-}
-```
+### Usage examples:
 #### Create events:
 ```c#
 public class TestCreatingEventsSystem : IEcsRunSystem
@@ -164,7 +126,7 @@ private void Start()
         .AddWorld(worldEvents, "events")
         // gameplay events
         ...
-        // automatically remove events
+        // automatically remove events of these types
         .Add(sharedData.EventsSupport.GetDestroyEventsSystem()
             .IncSingleton<PlayerReloadGunEvent>()
             .IncSingleton<PlayerMoveEvent>()
@@ -173,6 +135,45 @@ private void Start()
             .IncReplicant<PlayActionMusic>()
             .IncReplicant<TestEvent>())
 
+        .Init();
+}
+```
+### Initialization:
+#### Event component (a.k.a event body) should implement one (and only one) event type:
+```c#
+/// <summary>
+/// Simultaneously there can be only one instance of this event type
+/// </summary>
+public interface IEventSingleton { }
+
+/// <summary>
+/// Simultaneously there can be multiple instances of this event type
+/// </summary>
+public interface IEventReplicant { }
+```
+```c#
+public struct PlayerSwitchWeaponEvent : IEventSingleton { ... }
+public struct CreateVFX : IEventReplicant { ... }
+```
+#### Create EventsSupport object:
+```c#
+private void Start()
+{
+    world = new EcsWorld();
+    worldEvents = new EcsWorld();
+    sharedData = new SharedData
+    {
+        // events support object will manage events only in the world you pass
+        // you can use default world, but it's better to have separate one to reduce memory usage
+        EventsSupport = new EventsSupport(worldEvents),
+        ...
+    };
+
+    systems = new EcsSystems(world, sharedData);
+    systems
+        // you need to add according world to systems
+        .AddWorld(worldEvents, "events")
+        ...
         .Init();
 }
 ```
