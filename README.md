@@ -139,7 +139,7 @@ private void Start()
 }
 ```
 ### Initialization:
-#### Event component (a.k.a event body) should implement one (and only one) event type:
+#### Event component (aka event body) should implement one (and only one) event type:
 ```c#
 /// <summary>
 /// Simultaneously there can be only one instance of this event type
