@@ -88,13 +88,6 @@ public class TestEventsDestructionSystem : IEcsRunSystem
         // destroy singleton event, does nothing if event didn't exist in the first place
         events.DestroyEventSingleton<PlayerJumpEvent>();
 
-        // destroy singleton event you don't like
-        if (events.HasEventSingleton<PlayerMoveEvent>(out var moveEventBody)
-            && moveEventBody.Direction.sqrMagnitude == 0) 
-        {    
-            events.DestroyEventSingleton<PlayerMoveEvent>();
-        }
-
         // destroy events you don't like
         foreach (var entity in events.GetEventBodies<CreateVFX>(out var vfxCreationEventsPool))
         {
