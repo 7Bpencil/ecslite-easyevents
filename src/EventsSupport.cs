@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Leopotam.EcsLite;
- for  otto events  of eveaccording event
+
 namespace SevenBoldPencil.EasyEvents
 {
     /// <summary>
