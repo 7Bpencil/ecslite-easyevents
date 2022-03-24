@@ -1,4 +1,9 @@
-﻿using System;
+// ----------------------------------------------------------------------------
+// The Proprietary or MIT-Red License
+// Copyright (c) 2022 Edward Starkov aka 7Bpencil
+// ----------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using Leopotam.EcsLite;
 
