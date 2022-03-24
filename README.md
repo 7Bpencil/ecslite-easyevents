@@ -168,7 +168,7 @@ private void Start()
     ...
 }
 
-// do not forget to destroy EventsBus with other worlds
+// do not forget to destroy EventsBus and other worlds
 private void OnDestroy()
 {
     systems.Destroy();
