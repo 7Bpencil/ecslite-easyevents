@@ -2,6 +2,16 @@
 * Boilerplate-free syntax for full life cycle of events - entities with single component.  
 * No need to define filters, pools, and worlds in every place you want to use events, everything is inside one EventsBus object.  
 * Special support for singleton events - no more silly situations, when you have to run foreach loop over filter, even if you sure, that there can be only one entity.
+### Index
+* [Usage examples](#usage-examples)
+    * [Create events](#create-events)  
+    * [Check events on existence](#check-events-on-existence)  
+    * [Use or modify event bodies](#use-or-modify-event-bodies)  
+    * [Destroy events](#destroy-events)  
+    * [Destroy events of some types automatically](#destroy-events-of-some-types-automatically)  
+* [Initialization](#initialization)  
+    * [Event types](#event-component-aka-event-body-should-implement-one-and-only-one-event-type)
+    * [EventsBus object](#create-eventsbus-object)
 ### Usage examples:
 #### Create events:
 ```c#
