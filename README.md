@@ -1,6 +1,6 @@
 ## EasyEvents for [LeoEcsLite](https://github.com/Leopotam/ecslite)
 * Boilerplate-free syntax for full life cycle of events - entities with single component.  
-* No need to define filters, pools, and worlds in every place you want to use events, everything is inside one EventsSupport object.  
+* No need to define filters, pools, and worlds in every place you want to use events, everything is inside one EventsBus object.  
 * Special support for singleton events - no more silly situations, when you have to run foreach loop over filter, even if you sure, that there can be only one entity.
 ### Usage examples:
 #### Create events:
@@ -10,7 +10,7 @@ public class TestCreatingEventsSystem : IEcsRunSystem
     public void Run(EcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
-        var events = shared.EventsSupport;
+        var events = shared.EventsBus;
 
         // create new singleton event, if such event already exists, method returns body of existing one
         events.NewEventSingleton<PlayerReloadGunEvent>() = new PlayerReloadGunEvent {NextMag = ..., IsFastReload = ...};
@@ -31,7 +31,7 @@ public class TestCheckingEventsSystem : IEcsRunSystem
     public void Run(EcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
-        var events = shared.EventsSupport;
+        var events = shared.EventsBus;
 
         // check existence of singleton event
         if (events.HasEventSingleton<PlayerJumpEvent>()) {
@@ -52,7 +52,7 @@ public class TestUsingModifyingEventsSystem : IEcsRunSystem
     public void Run(EcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
-        var events = shared.EventsSupport;
+        var events = shared.EventsBus;
         
         // check existence of singleton event and get event body to use (method returns by value - C# limitation)
         if (events.HasEventSingleton<PlayerMoveEvent>(out var moveEventBody)) {
@@ -83,7 +83,7 @@ public class TestEventsDestructionSystem : IEcsRunSystem
     public void Run(EcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
-        var events = shared.EventsSupport;
+        var events = shared.EventsBus;
         
         // destroy singleton event, does nothing if event didn't exist in the first place
         events.DestroyEventSingleton<PlayerJumpEvent>();
@@ -107,20 +107,18 @@ public class TestEventsDestructionSystem : IEcsRunSystem
 private void Start()
 {
     world = new EcsWorld();
-    worldEvents = new EcsWorld();
     sharedData = new SharedData
     {
-        EventsSupport = new EventsSupport(worldEvents),
+        EventsBus = new EventsBus(),
         ...
     };
 
     systems = new EcsSystems(world, sharedData);
     systems
-        .AddWorld(worldEvents, "events")
         // gameplay events
         ...
-        // automatically remove events of these types
-        .Add(sharedData.EventsSupport.GetDestroyEventsSystem()
+        // automatically remove all events of these types
+        .Add(sharedData.EventsBus.GetDestroyEventsSystem()
             .IncSingleton<PlayerReloadGunEvent>()
             .IncSingleton<PlayerMoveEvent>()
             .IncSingleton<PlayerJumpEvent>()
@@ -148,25 +146,33 @@ public interface IEventReplicant { }
 public struct PlayerSwitchWeaponEvent : IEventSingleton { ... }
 public struct CreateVFX : IEventReplicant { ... }
 ```
-#### Create EventsSupport object:
+#### Create EventsBus object:
 ```c#
 private void Start()
 {
     world = new EcsWorld();
-    worldEvents = new EcsWorld();
     sharedData = new SharedData
     {
-        // events support object will manage events only in the world you pass
-        // you can use default world, but it's better to have separate one to reduce memory usage
-        EventsSupport = new EventsSupport(worldEvents),
+        // EventsBus object will create its own internal EcsWorld to manage events
+        EventsBus = new EventsBus(),
         ...
     };
 
+    // you can get EventsBus' internal events world, but it's modification is not safe
+#if UNITY_EDITOR
+        UnityIntegration.EcsWorldObserver.Create (sharedData.EventsBus.GetEventsWorld());
+#endif  
+
+    // now you can use events in every system you like
     systems = new EcsSystems(world, sharedData);
-    systems
-        // you need to add according world to systems
-        .AddWorld(worldEvents, "events")
-        ...
-        .Init();
+    ...
+}
+
+// do not forget to destroy EventsBus with other worlds
+private void OnDestroy()
+{
+    systems.Destroy();
+    world.Destroy();
+    sharedData.EventsBus.Destroy();
 }
 ```
