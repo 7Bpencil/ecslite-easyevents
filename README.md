@@ -134,8 +134,8 @@ private void Start()
             .IncSingleton<PlayerJumpEvent>()
             .IncReplicant<CreateVFX>()
             .IncReplicant<PlayActionMusic>()
-            .IncReplicant<TestEvent>())
-
+            .IncReplicant<TestEvent>()
+        )
         .Init();
 }
 ```
