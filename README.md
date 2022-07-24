@@ -17,7 +17,7 @@
 ```c#
 public class TestCreatingEventsSystem : IEcsRunSystem
 {
-    public void Run(EcsSystems systems)
+    public void Run(IEcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
         var events = shared.EventsBus;
@@ -38,7 +38,7 @@ public class TestCreatingEventsSystem : IEcsRunSystem
 ```c#
 public class TestCheckingEventsSystem : IEcsRunSystem
 {
-    public void Run(EcsSystems systems)
+    public void Run(IEcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
         var events = shared.EventsBus;
@@ -59,7 +59,7 @@ public class TestCheckingEventsSystem : IEcsRunSystem
 ```c#
 public class TestUsingModifyingEventsSystem : IEcsRunSystem
 {
-    public void Run(EcsSystems systems)
+    public void Run(IEcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
         var events = shared.EventsBus;
@@ -90,7 +90,7 @@ public class TestUsingModifyingEventsSystem : IEcsRunSystem
 ```c#
 public class TestEventsDestructionSystem : IEcsRunSystem
 {
-    public void Run(EcsSystems systems)
+    public void Run(IEcsSystems systems)
     {
         var shared = systems.GetShared<SharedData>();
         var events = shared.EventsBus;

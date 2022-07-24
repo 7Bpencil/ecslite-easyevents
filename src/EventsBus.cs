@@ -136,7 +136,7 @@ namespace SevenBoldPencil.EasyEvents
                 destructionActions = new List<Action>(capacity);
             }
 
-            public void Run(EcsSystems systems)
+            public void Run(IEcsSystems systems)
             {
                 foreach (var action in destructionActions) {
                     action();
